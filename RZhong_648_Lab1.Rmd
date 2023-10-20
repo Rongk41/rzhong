@@ -9,22 +9,49 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Visualizations
+```{r}
+boulder <- st_read("C:/Users/rongkaiz/Downloads/rzhong/BoulderSocialMedia.shp")
+boulder
+summary(boulder)
 ```
 
-## Including Plots
+### Plots
 
-You can also embed plots, for example:
+Compare the distance from trails and social media photographs
+```{r}
+boulder %>%
+  filter(DB ==  'Pano' | DB == 'Flickr') %>%
+  ggplot(aes(x=DB, y=Trails_dis)) + 
+  geom_boxplot()
+```
+### Graduated color maps
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Use graudated colors to visualize the distances to the trails.
+```{r}
+ggplot() +
+    geom_sf(data =boulder, aes(color=Trails_dis),
+    fill = NA, alpha = .2) +
+    scale_colour_gradientn(colours = inferno(10))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+library(tmap)
+```
+
+Use trail distances to depict the pattern of trails of Boulder.
+```{r}
+## Add the data - these are specific to the vector or raster
+tm_shape(boulder) + 
+  ## which variable, is there a class interval, palette, and other options
+  tm_symbols(col='Trails_dis', 
+             style='quantile', 
+             palette = 'Greys',
+             border.lwd = NA,
+             size = 0.1)
+```
+## Questions
+
+Discuss the advantages and challenges associated with an open data science approach. Provide an example based on this week’s reading. (1-2 paragraphs)
+
+Create a markdown document that showcases an analysis of this week’s data or any other dataset of your choice. Include descriptive text that explains your analysis, and incorporate figures and geovisualizations.Include 1 chart and 1 map. Structure and explain your analysis with text, headings, highlights, images and other markdown basics.
